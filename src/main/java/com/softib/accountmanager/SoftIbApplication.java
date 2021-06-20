@@ -45,7 +45,7 @@ public class SoftIbApplication {
 			      .securitySchemes(Arrays.asList(apiKey()))
 				.select()
 				.paths(PathSelectors.ant("/**"))
-				.apis(RequestHandlerSelectors.basePackage("com.softib.helpcenter"))
+				.apis(RequestHandlerSelectors.basePackage("com.softib.accountManager"))
 			
 				.build();
 	}
@@ -66,7 +66,7 @@ public class SoftIbApplication {
 	private ApiInfo apiInfo() {
 	    return new ApiInfo(
 	      "REST API",
-	      "Soft IB Core API.",
+	      "Soft IB Account management API.",
 	      "1.0",
 	      "Terms of service",
 	      new Contact("Dhia saadlaui", "https://github.com/dhiasaadlaui/softib", "dhiasaadlaui@gmail.com"),
