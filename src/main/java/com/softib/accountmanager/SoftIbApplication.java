@@ -45,8 +45,7 @@ public class SoftIbApplication {
 			      .securitySchemes(Arrays.asList(apiKey()))
 				.select()
 				.paths(PathSelectors.ant("/**"))
-				.apis(RequestHandlerSelectors.basePackage("com.softib.accountManager"))
-			
+				.apis(RequestHandlerSelectors.basePackage("com.softib.accountmanager"))
 				.build();
 	}
 	
