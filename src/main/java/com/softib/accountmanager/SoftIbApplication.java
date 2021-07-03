@@ -3,18 +3,13 @@ package com.softib.accountmanager;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Stream;
 
-import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.context.annotation.Bean;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.security.crypto.password.PasswordEncoder;
-
 
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
@@ -31,46 +26,40 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @SpringBootApplication
 @EnableSwagger2
 @EnableDiscoveryClient
+@EnableAutoConfiguration
+
 public class SoftIbApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(SoftIbApplication.class, args);
 	}
-		
+
 	@Bean
 	public Docket swaggerConfiguration() {
-		return new Docket(DocumentationType.SWAGGER_2)
-			      .apiInfo(apiInfo())
-			      .securityContexts(Arrays.asList(securityContext()))
-			      .securitySchemes(Arrays.asList(apiKey()))
-				.select()
-				.paths(PathSelectors.ant("/**"))
-				.apis(RequestHandlerSelectors.basePackage("com.softib.accountmanager"))
+		return new Docket(DocumentationType.SWAGGER_2).apiInfo(apiInfo())
+				.securityContexts(Arrays.asList(securityContext())).securitySchemes(Arrays.asList(apiKey())).select()
+				.paths(PathSelectors.ant("/**")).apis(RequestHandlerSelectors.basePackage("com.softib.accountmanager"))
 				.build();
 	}
-	
-	private ApiKey apiKey() { 
-	    return new ApiKey("JWT", "Authorization", "header"); 
-	}
-	private SecurityContext securityContext() { 
-	    return SecurityContext.builder().securityReferences(defaultAuth()).build(); 
-	} 
 
-	private List<SecurityReference> defaultAuth() { 
-	    AuthorizationScope authorizationScope = new AuthorizationScope("global", "accessEverything"); 
-	    AuthorizationScope[] authorizationScopes = new AuthorizationScope[1]; 
-	    authorizationScopes[0] = authorizationScope; 
-	    return Arrays.asList(new SecurityReference("JWT", authorizationScopes)); 
+	private ApiKey apiKey() {
+		return new ApiKey("JWT", "Authorization", "header");
 	}
+
+	private SecurityContext securityContext() {
+		return SecurityContext.builder().securityReferences(defaultAuth()).build();
+	}
+
+	private List<SecurityReference> defaultAuth() {
+		AuthorizationScope authorizationScope = new AuthorizationScope("global", "accessEverything");
+		AuthorizationScope[] authorizationScopes = new AuthorizationScope[1];
+		authorizationScopes[0] = authorizationScope;
+		return Arrays.asList(new SecurityReference("JWT", authorizationScopes));
+	}
+
 	private ApiInfo apiInfo() {
-	    return new ApiInfo(
-	      "REST API",
-	      "Soft IB Account management API.",
-	      "1.0",
-	      "Terms of service",
-	      new Contact("Dhia saadlaui", "https://github.com/dhiasaadlaui/softib", "dhiasaadlaui@gmail.com"),
-	      "License of API",
-	      "API license URL",
-	      Collections.emptyList());
+		return new ApiInfo("REST API", "Soft IB Account management API.", "1.0", "Terms of service",
+				new Contact("Dhia saadlaui", "https://github.com/dhiasaadlaui/softib", "dhiasaadlaui@gmail.com"),
+				"License of API", "API license URL", Collections.emptyList());
 	}
 }
