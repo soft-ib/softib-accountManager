@@ -21,6 +21,10 @@ import com.softib.accountmanager.security.MyUserDetailsService;
 @Table(name = "Account")
 @javax.persistence.Entity(name = "Account")
 public class Account implements Serializable {
+	public Integer getAcc_identifier() {
+		return acc_identifier;
+	}
+
 	/**
 	* 
 	*/
