@@ -16,7 +16,7 @@ import com.softib.accountmanager.services.CreditCardServiceImpl;
 public class TenantConnectionProvider implements MultiTenantConnectionProvider {
 
 	private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(CreditCardServiceImpl.class);
-	private String DEFAULT_TENANT = "bingtun";
+	private String DEFAULT_TENANT = "accountmanager";
 	private DataSource datasource;
 
 	public TenantConnectionProvider(DataSource dataSource) {

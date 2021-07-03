@@ -38,8 +38,7 @@ public class AccountRestController implements AccountController {
 	}
 
 	public void delete(Account account) {
-		// TODO Auto-generated method stub
-
+		accountService.delete(account);
 	}
 
 }

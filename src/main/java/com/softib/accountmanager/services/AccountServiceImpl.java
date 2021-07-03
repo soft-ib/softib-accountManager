@@ -16,7 +16,7 @@ public class AccountServiceImpl implements AccountService {
 
 	@Autowired
 	private AccountRepository accountRepository;
-	
+
 	private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(AccountServiceImpl.class);
 
 	@Override
@@ -53,6 +53,26 @@ public class AccountServiceImpl implements AccountService {
 	}
 
 	@Override
-	public void delete(Account account) { }
+	public void delete(Account account) {
+		logger.info("In method deleteEmployeById");
+		try {
+			Optional<Account> accountDB = accountRepository.findById(account.getAcc_identifier());
 
+			// Desaffecter l'employe de tous les departements
+			// c'est le bout master qui permet de mettre a jour
+			// la table d'association
+			logger.info("Out of method deleteEmployeById");
+			if (!accountDB.isPresent()) {
+				logger.error("ID does not Exist");
+				throw new IllegalArgumentException("ID does not Exist");
+			}
+
+			accountRepository.delete(accountDB.get());
+		} catch (IllegalArgumentException e) {
+			logger.error("Out of method deleteEmployeById with Errors : " + e);
+		} finally {
+			logger.info("Out of method deleteEmployeById");
+
+		}
+	}
 }

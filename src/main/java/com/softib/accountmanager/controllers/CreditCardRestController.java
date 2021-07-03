@@ -39,8 +39,8 @@ public class CreditCardRestController implements CreditCardController {
 	}
 
 	@Override
-	public void delete(CreditCard account) {
-		// TODO Auto-generated method stub
+	public void delete(CreditCard creditCard) {
+		creditCardService.delete(creditCard);
 
 	}
 

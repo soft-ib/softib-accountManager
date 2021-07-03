@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class TenantSchemaResolver implements CurrentTenantIdentifierResolver {
 
-	private String defaultTenant = "bingtun";
+	private String defaultTenant = "accountmanager";
 
 	@Override
 	public String resolveCurrentTenantIdentifier() {
