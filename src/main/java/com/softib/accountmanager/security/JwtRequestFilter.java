@@ -16,6 +16,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.softib.accountmanager.util.JwtUtil;
+import com.softib.accountmanager.util.TenantContext;
+import com.softib.accountmanager.util.TenantSchemaResolver;
 
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter {
@@ -35,6 +37,12 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 		if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
 			jwt = authorizationHeader.substring(7);
 			username = jwtUtil.extractUsername(jwt);
+			if ("admin".equals(username)) {
+				TenantContext.setCurrentTenant("accountmanager");
+			} else {
+				TenantContext.setCurrentTenant("bingtun");
+
+			}
 
 		}
 		if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {

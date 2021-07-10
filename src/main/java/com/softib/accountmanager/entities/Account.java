@@ -1,19 +1,20 @@
 package com.softib.accountmanager.entities;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.Set;
 
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.PrePersist;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+
+import org.springframework.format.annotation.DateTimeFormat;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.softib.accountmanager.security.MyUserDetailsService;
@@ -31,8 +32,11 @@ public class Account implements Serializable {
 	private static final long serialVersionUID = 3858470153577336304L;
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer acc_identifier;
+
+	public void setAcc_identifier(Integer acc_identifier) {
+		this.acc_identifier = acc_identifier;
+	}
 
 	@javax.persistence.Column(name = "balance", unique = false, nullable = false, insertable = true, updatable = false, length = 255)
 	@Basic(fetch = FetchType.EAGER, optional = false)
@@ -48,13 +52,17 @@ public class Account implements Serializable {
 
 	@OneToMany(targetEntity = CreditCard.class, fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "account", orphanRemoval = true)
 	@JsonManagedReference
-
 	private Set<CreditCard> ceditCard = new java.util.HashSet<>();
+
+	@OneToMany(targetEntity = PocketCashCard.class, fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "account", orphanRemoval = true)
+	@JsonManagedReference
+	private Set<PocketCashCard> pocketCashCard = new java.util.HashSet<>();
 
 	// TECHNICAL
 
+	@DateTimeFormat(pattern = "dd/MM/yyyy")
+	@Temporal(value = TemporalType.DATE)
 	@javax.persistence.Column(name = "creation_date_", unique = false, nullable = false, insertable = true, updatable = false)
-	@Temporal(value = TemporalType.TIMESTAMP)
 	@Basic(fetch = FetchType.EAGER, optional = false)
 
 	private java.util.Date creation_date_ = null;
@@ -63,6 +71,18 @@ public class Account implements Serializable {
 	@Basic(fetch = FetchType.EAGER, optional = false)
 
 	private String creator_user_id_ = null;
+
+	@DateTimeFormat(pattern = "dd/MM/yyyy")
+	@Temporal(value = TemporalType.DATE)
+	@javax.persistence.Column(name = "update_date_", unique = false, nullable = false, insertable = true, updatable = true)
+	@Basic(fetch = FetchType.EAGER, optional = false)
+
+	private java.util.Date update_date_ = null;
+
+	@javax.persistence.Column(name = "updator_user_id_", unique = false, nullable = false, insertable = true, updatable = true, length = 255)
+	@Basic(fetch = FetchType.EAGER, optional = true)
+
+	private String updator_user_id_ = null;
 
 	@Override
 	public int hashCode() {
@@ -89,16 +109,45 @@ public class Account implements Serializable {
 		return true;
 	}
 
-	@javax.persistence.Column(name = "update_date_", unique = false, nullable = false, insertable = true, updatable = true)
-	@Temporal(value = TemporalType.TIMESTAMP)
-	@Basic(fetch = FetchType.EAGER, optional = false)
+	@Override
+	public String toString() {
+		return acc_identifier + "," + balance + "," + accountNumber + "," + Iban + "," + "-CreditCard-" + ceditCard
+				+ "," + "*PocketCashCard *" + pocketCashCard + "," + creation_date_ + "," + creator_user_id_ + ","
+				+ update_date_ + "," + updator_user_id_;
 
-	private java.util.Date update_date_ = null;
+	}
 
-	@javax.persistence.Column(name = "updator_user_id_", unique = false, nullable = false, insertable = true, updatable = true, length = 255)
-	@Basic(fetch = FetchType.EAGER, optional = true)
+	// THIS METHOD NEED TO BE ADDED TO INTERFACE IMMPLEMENTED BY ALL ENTITIES AND
+	// THE INTLIGENCE IS THAT IT WILL CONVERT ONLY THE COMPOSITIONS SO LATER THE
+	// ARCHIVE ARCHIVE ONLY COMPOSITION AND DELETE THEM WITHOUT ISSUES
+	public String convertToString() {
+		return acc_identifier + "," + balance + "," + accountNumber + "," + "*CreditCard *" + ceditCard + ","
+				+ "*PocketCashCard *" + pocketCashCard + "," + creation_date_ + "," + creator_user_id_ + ","
+				+ update_date_ + "," + updator_user_id_;
+	}
 
-	private String updator_user_id_ = null;
+	public Account(Integer acc_identifier, Float balance, Integer accountNumber, String iban, Set<CreditCard> ceditCard,
+			Set<PocketCashCard> pocketCashCard, Date creation_date_, String creator_user_id_, Date update_date_,
+			String updator_user_id_) {
+		super();
+		this.acc_identifier = acc_identifier;
+		this.balance = balance;
+		this.accountNumber = accountNumber;
+		Iban = iban;
+		this.ceditCard = ceditCard;
+		this.pocketCashCard = pocketCashCard;
+		this.creation_date_ = creation_date_;
+		this.creator_user_id_ = creator_user_id_;
+		this.update_date_ = update_date_;
+		this.updator_user_id_ = updator_user_id_;
+	}
+
+	public Account(Float balance, String creator_userid) {
+		super();
+		this.balance = balance;
+
+		this.creator_user_id_ = creator_userid;
+	}
 
 	// Default Constructor
 	public Account() {
@@ -111,6 +160,11 @@ public class Account implements Serializable {
 
 	public void setBalance(Float balance) {
 		this.balance = balance;
+	}
+
+	public Account(Integer acc_identifier) {
+		super();
+		this.acc_identifier = acc_identifier;
 	}
 
 	public int getAccountNumber() {
@@ -171,10 +225,23 @@ public class Account implements Serializable {
 	}
 
 	public void addCeditCard(CreditCard ceditCard) {
-		this.ceditCard.add(ceditCard);
 		ceditCard.setAccount(this);
+		this.ceditCard.add(ceditCard);
 	}
 	// CALL BACKS
+
+	public Set<PocketCashCard> getPocketCashCard() {
+		return pocketCashCard;
+	}
+
+	public void setPocketCashCard(Set<PocketCashCard> pocketCashCard) {
+		this.pocketCashCard = pocketCashCard;
+	}
+
+	public void addPocketCash(PocketCashCard pocketCashCard) {
+		this.pocketCashCard.add(pocketCashCard);
+		pocketCashCard.setAccount(this);
+	}
 
 	@PrePersist
 	public void prePersist() {

@@ -6,16 +6,26 @@ import java.util.Optional;
 
 import org.apache.logging.log4j.LogManager;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.convert.ConversionService;
+import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
 
 import com.softib.accountmanager.entities.Account;
+import com.softib.accountmanager.entities.Archive;
 import com.softib.accountmanager.repositories.AccountRepository;
+import com.softib.accountmanager.repositories.ArchiveRepository;
 
 @Service
-public class AccountServiceImpl implements AccountService {
+public class AccountServiceImpl extends ArchiveServiceImpl implements AccountService {
 
 	@Autowired
 	private AccountRepository accountRepository;
+
+	@Autowired
+	private ArchiveRepository archiveRepository;
+
+	@Autowired
+	ConversionService conversionService;
 
 	private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(AccountServiceImpl.class);
 
@@ -74,5 +84,30 @@ public class AccountServiceImpl implements AccountService {
 			logger.info("Out of method deleteEmployeById");
 
 		}
+	}
+
+	@Override
+	public void archive(Integer id) {
+		Optional<Account> accountDB = accountRepository.findById(id);
+		if (accountDB.isPresent()) {
+			String content = accountDB.get().toString();
+			String type = accountDB.get().getClass().getName();
+			Archive arch = new Archive();
+			arch.setType(type);
+			arch.setContent(content);
+			archiveRepository.save(arch);
+			accountRepository.deleteById(id);
+		}
+
+	}
+
+	@Override
+	public void restore(Integer id) {
+		Optional<Archive> archiveDB = archiveRepository.findById(id);
+		if (archiveDB.isPresent()) {
+			Account acc = conversionService.convert(archiveDB.get().getContent(), Account.class);
+			accountRepository.save(acc);
+		}
+
 	}
 }
