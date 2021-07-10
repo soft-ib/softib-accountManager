@@ -14,12 +14,31 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.softib.accountmanager.security.MyUserDetailsService;
 
 @Table(name = "credit_card")
 @javax.persistence.Entity(name = "CreditCard")
 public class CreditCard implements Serializable {
+
+	public CreditCard(Integer card_identifier, String card_type, String card_number, int cvv, Date exp_date,
+			boolean isactive, Account account, Date creation_date_, String creator_user_id_, Date update_date_,
+			String updator_user_id_) {
+		super();
+		this.card_identifier = card_identifier;
+		this.card_type = card_type;
+		this.card_number = card_number;
+		this.cvv = cvv;
+		this.exp_date = exp_date;
+		this.isactive = isactive;
+		this.account = account;
+		this.creation_date_ = creation_date_;
+		this.creator_user_id_ = creator_user_id_;
+		this.update_date_ = update_date_;
+		this.updator_user_id_ = updator_user_id_;
+	}
 
 	/**
 	 * 
@@ -30,7 +49,6 @@ public class CreditCard implements Serializable {
 	*/
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer card_identifier;
 
 	@javax.persistence.Column(name = "card_type", unique = false, nullable = false, insertable = true, updatable = false, length = 255)
@@ -45,6 +63,8 @@ public class CreditCard implements Serializable {
 	@Basic(fetch = FetchType.EAGER, optional = false)
 	private int cvv;
 
+	@DateTimeFormat(pattern = "dd/MM/yyyy")
+	@Temporal(value = TemporalType.DATE)
 	@javax.persistence.Column(name = "exp_date", unique = false, nullable = false, insertable = true, updatable = false, length = 255)
 	@Basic(fetch = FetchType.EAGER, optional = false)
 	private Date exp_date;
@@ -62,8 +82,9 @@ public class CreditCard implements Serializable {
 		super();
 	}
 
+	@DateTimeFormat(pattern = "dd/MM/yyyy")
+	@Temporal(value = TemporalType.DATE)
 	@javax.persistence.Column(name = "creation_date_", unique = false, nullable = false, insertable = true, updatable = false)
-	@Temporal(value = TemporalType.TIMESTAMP)
 	@Basic(fetch = FetchType.EAGER, optional = false)
 
 	private java.util.Date creation_date_ = null;
@@ -105,8 +126,9 @@ public class CreditCard implements Serializable {
 
 	private String creator_user_id_ = null;
 
+	@DateTimeFormat(pattern = "dd/MM/yyyy")
+	@Temporal(value = TemporalType.DATE)
 	@javax.persistence.Column(name = "update_date_", unique = false, nullable = false, insertable = true, updatable = true)
-	@Temporal(value = TemporalType.TIMESTAMP)
 	@Basic(fetch = FetchType.EAGER, optional = false)
 
 	private java.util.Date update_date_ = null;
@@ -162,6 +184,18 @@ public class CreditCard implements Serializable {
 
 	public void setAccount(Account account) {
 		this.account = account;
+	}
+
+	@Override
+	public String toString() {
+		return ";" + card_identifier + "," + card_type + "," + card_number + "," + cvv + "," + exp_date + "," + isactive
+				+ "," + account.getAcc_identifier() + "," + creation_date_ + "," + creator_user_id_ + "," + update_date_
+				+ "," + updator_user_id_;
+	}
+
+	public String convertToString() {
+		return card_identifier + "," + card_type + "," + card_number + "," + cvv + "," + exp_date + "," + isactive + ","
+				+ account + "," + creation_date_ + "," + creator_user_id_ + "," + update_date_ + "," + updator_user_id_;
 	}
 
 	// CALL BACKS
