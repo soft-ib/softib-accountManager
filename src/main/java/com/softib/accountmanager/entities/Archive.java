@@ -34,7 +34,7 @@ public class Archive implements Serializable {
 
 	@Lob
 	@javax.persistence.Column(name = "content", unique = false, nullable = false, insertable = true, updatable = false, length = 512)
-	@Basic(fetch = FetchType.EAGER, optional = false)
+	@Basic(fetch = FetchType.LAZY)
 	private String content;
 
 	// TECHNICAL

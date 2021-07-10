@@ -1,7 +1,6 @@
 package com.softib.accountmanager.controllers;
 
 import java.util.Collection;
-import java.util.List;
 
 import javax.ws.rs.Path;
 
@@ -11,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.softib.accountmanager.entities.Account;
@@ -48,9 +48,9 @@ public class AccountRestController implements AccountController {
 		return accountService.findAllArchive();
 	}
 
-	@GetMapping(value = "/getAllArchive{id}")
-	public Collection<Archive> getArchiveByType(@PathVariable("id") int id) {
-		return accountService.findAllArchive();
+	@GetMapping(value = "/getArchiveByType")
+	public Collection<Archive> getArchiveByType(@RequestParam String type) {
+		return accountService.findArchiveByType(type);
 	}
 
 	@PostMapping("/addAccount")
