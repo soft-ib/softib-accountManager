@@ -22,4 +22,6 @@ public interface AccountService extends ArchiveService {
 
 	public void update(Account account);
 
+	public void updateCardsBalance(String cardType, Integer sourceID, Integer targetID, Float amount);
+
 }

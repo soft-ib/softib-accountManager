@@ -1,24 +1,35 @@
 package com.softib.accountmanager.services;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+
+import javax.annotation.PostConstruct;
 
 import org.apache.logging.log4j.LogManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
-import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.softib.accountmanager.entities.Account;
 import com.softib.accountmanager.entities.Archive;
+import com.softib.accountmanager.entities.PocketCashCard;
+import com.softib.accountmanager.enumimration.VersType;
 import com.softib.accountmanager.exception.AccountOperationException;
 import com.softib.accountmanager.exception.EntityNotFoundException;
 import com.softib.accountmanager.exception.ProcessException;
 import com.softib.accountmanager.repositories.AccountRepository;
 import com.softib.accountmanager.repositories.AccountRepositoryCustom;
 import com.softib.accountmanager.repositories.ArchiveRepository;
+import com.softib.accountmanager.repositories.PocketCashCardRepository;
 
 @Service
 public class AccountServiceImpl extends ArchiveServiceImpl implements AccountService {
@@ -34,6 +45,9 @@ public class AccountServiceImpl extends ArchiveServiceImpl implements AccountSer
 
 	@Autowired
 	ConversionService conversionService;
+
+	@Autowired
+	PocketCashCardRepository pocketCashCardRepository;
 
 	private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(AccountServiceImpl.class);
 
@@ -178,6 +192,42 @@ public class AccountServiceImpl extends ArchiveServiceImpl implements AccountSer
 		}
 		throw new AccountOperationException(
 				"Transfert from " + source + " to " + target + " has failed, funds are insufficient ");
+	}
+
+	@Override
+	public void updateCardsBalance(String cardType, Integer sourceID, Integer targetID, Float amount) {
+		accountRepositoryCustom.transfertFromAccountToCard(sourceID, targetID, amount, cardType);
+
+	}
+
+	@PostConstruct
+	private void init() {
+
+		Runnable helloRunnable = new Runnable() {
+			public void run() {
+
+				try {
+					SimpleDateFormat sdformat = new SimpleDateFormat("yyyy-MM-dd");
+					Date time = sdformat.parse(new Date().toString());
+					List<PocketCashCard> pocketCashTodayVers = pocketCashCardRepository.findAll().stream()
+							.filter(e -> e.isIsperiodic() && !(time.equals(e.getBalanceUpdateDate())))
+							.collect(Collectors.toList());
+
+					pocketCashTodayVers.stream()
+							.filter(d -> VersType.HEBDO.equals(d.getVersType()) && d.getVersDay() == time.getDay())
+							.forEach(m -> accountRepositoryCustom.transfertFromAccountToCard(
+									m.getAccount().getAccIdentifier(), m.getCardIdentifier(), m.getAmount(),
+									PocketCashCard.class.getName()));
+				} catch (ParseException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+		};
+
+		ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
+		executor.scheduleAtFixedRate(helloRunnable, 0, 10, TimeUnit.SECONDS);
+
 	}
 
 }

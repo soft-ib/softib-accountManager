@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.softib.accountmanager.entities.Account;
 import com.softib.accountmanager.entities.PocketCashCard;
+import com.softib.accountmanager.exception.ProcessException;
 
 /**
  * @author jsaoudi
@@ -55,6 +56,7 @@ public class AccountRepositoryImpl implements AccountRepositoryCustom {
 
 	@Transactional
 	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@Override
 	public int transfertFromAccountToCard(Integer sourceId, Integer targetId, Float amount, String cardType) {
 		CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
 		int rowCountTarget = 0;
@@ -70,13 +72,21 @@ public class AccountRepositoryImpl implements AccountRepositoryCustom {
 		rowCountSource = queryForSource.executeUpdate();
 
 		if (rowCountSource > 0) {
-			CriteriaUpdate updateupdateTarget = criteriaBuilder.createCriteriaUpdate(PocketCashCard.class);
-			Root acountTarget = updateupdateTarget.from(PocketCashCard.class);
-			updateupdateTarget.set(acountTarget.get("balance"),
-					criteriaBuilder.sum(acountTarget.get("balance"), amount));
-			updateupdateTarget.where(criteriaBuilder.equal(acountTarget.get("accIdentifier"), targetId));
-			Query queryTarget = entityManager.createQuery(updateupdateTarget);
-			rowCountTarget = queryTarget.executeUpdate();
+			try {
+				Class rootType = Class.forName(cardType);
+				java.sql.Timestamp time = new java.sql.Timestamp(System.currentTimeMillis());
+
+				CriteriaUpdate updateupdateTarget = criteriaBuilder.createCriteriaUpdate(PocketCashCard.class);
+				Root acountTarget = updateupdateTarget.from(rootType);
+				updateupdateTarget.set(acountTarget.get("balance"),
+						criteriaBuilder.sum(acountTarget.get("balance"), amount));
+				updateupdateTarget.set(acountTarget.get("balanceUpdateDate"), time);
+				updateupdateTarget.where(criteriaBuilder.equal(acountTarget.get("cardIdentifier"), targetId));
+				Query queryTarget = entityManager.createQuery(updateupdateTarget);
+				rowCountTarget = queryTarget.executeUpdate();
+			} catch (ClassNotFoundException e) {
+				throw new ProcessException("Transfert from Account to card", e);
+			}
 		}
 		return rowCountSource + rowCountTarget;
 

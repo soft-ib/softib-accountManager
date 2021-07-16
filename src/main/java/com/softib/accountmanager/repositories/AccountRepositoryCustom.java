@@ -8,4 +8,6 @@ public interface AccountRepositoryCustom {
 
 	public int withdraw(Integer sourceID, Float amount);
 
+	public int transfertFromAccountToCard(Integer sourceId, Integer targetId, Float amount, String cardType);
+
 }
