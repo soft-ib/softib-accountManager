@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.softib.accountmanager.entities.Account;
 import com.softib.accountmanager.entities.Archive;
+import com.softib.accountmanager.exception.EntityNotFoundException;
 import com.softib.accountmanager.repositories.ArchiveRepository;
 
 public class ArchiveServiceImpl {
@@ -19,6 +20,11 @@ public class ArchiveServiceImpl {
 
 	public Collection<Archive> findArchiveByType(String type) {
 		return archiveRepository.findByType(type);
+
+	}
+
+	public Archive findArchiveById(Integer id) {
+		return archiveRepository.findByContentId(id).orElseThrow(() -> new EntityNotFoundException("Archive", id));
 
 	}
 

@@ -2,10 +2,10 @@ package com.softib.accountmanager.util;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.logging.log4j.LogManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.converter.Converter;
@@ -14,23 +14,16 @@ import org.springframework.stereotype.Component;
 import com.softib.accountmanager.entities.Account;
 import com.softib.accountmanager.entities.CreditCard;
 import com.softib.accountmanager.entities.PocketCashCard;
+import com.softib.accountmanager.exception.ProcessException;
+import com.softib.accountmanager.services.CreditCardServiceImpl;
 
 @Component("StringToAccountConverter")
 public class StringToAccountConverter implements Converter<String, Account> {
+	private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(CreditCardServiceImpl.class);
 
 	@Autowired
 	ConversionService conversionService;
 
-//acc_identifier + "," + balance + "," + accountNumber + "," + "*CreditCard*" + ceditCard + ","
-//+ "*PocketCashCard*" + pocketCashCard + "," + creation_date_ + "," + creator_user_id_ + ","
-//+ update_date_ + "," + updator_user_id_;
-
-	// public Account(Integer acc_identifier, Float balance, Integer accountNumber,
-	// String iban, Set<CreditCard> ceditCard,
-	// Set<PocketCashCard> pocketCashCard, Date creation_date_,
-	// String creator_user_id_, Date update_date_,
-
-	// String updator_user_id_) {
 	@Override
 	public Account convert(String from) {
 		String localFrom = from;
@@ -54,8 +47,7 @@ public class StringToAccountConverter implements Converter<String, Account> {
 			initCompositions(from, acc);
 
 		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new ProcessException("while converting string to Account:", e);
 		}
 		return acc;
 	}
@@ -74,8 +66,7 @@ public class StringToAccountConverter implements Converter<String, Account> {
 					new SimpleDateFormat("dd-MM-yyyy").parse(data[9]),
 					conversionService.convert(data[10], String.class));
 		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new ProcessException("while converting string to Credit Card:", e);
 		}
 		return creditCard;
 	}

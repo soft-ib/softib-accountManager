@@ -13,4 +13,7 @@ public interface ArchiveService {
 	Collection<Archive> findAllArchive();
 
 	Collection<Archive> findArchiveByType(String type);
+
+	Archive findArchiveById(Integer id);
+
 }
