@@ -28,6 +28,10 @@ public class Archive implements Serializable {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 
+	@javax.persistence.Column(name = "contentId", unique = false, nullable = false, insertable = true, updatable = false, length = 255)
+	@Basic(fetch = FetchType.EAGER, optional = false)
+	private Integer contentId;
+
 	@javax.persistence.Column(name = "type", unique = false, nullable = false, insertable = true, updatable = false, length = 255)
 	@Basic(fetch = FetchType.EAGER, optional = false)
 	private String type;
@@ -111,6 +115,14 @@ public class Archive implements Serializable {
 
 	public void setUpdator_user_id_(String updator_user_id_) {
 		this.updator_user_id_ = updator_user_id_;
+	}
+
+	public Integer getContentId() {
+		return contentId;
+	}
+
+	public void setContentId(Integer contentId) {
+		this.contentId = contentId;
 	}
 
 	@PrePersist

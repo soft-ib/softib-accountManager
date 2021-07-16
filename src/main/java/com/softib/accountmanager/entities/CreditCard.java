@@ -10,6 +10,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -23,135 +24,110 @@ import com.softib.accountmanager.security.MyUserDetailsService;
 @javax.persistence.Entity(name = "CreditCard")
 public class CreditCard implements Serializable {
 
-	public CreditCard(Integer card_identifier, String card_type, String card_number, int cvv, Date exp_date,
-			boolean isactive, Account account, Date creation_date_, String creator_user_id_, Date update_date_,
-			String updator_user_id_) {
-		super();
-		this.card_identifier = card_identifier;
-		this.card_type = card_type;
-		this.card_number = card_number;
-		this.cvv = cvv;
-		this.exp_date = exp_date;
-		this.isactive = isactive;
-		this.account = account;
-		this.creation_date_ = creation_date_;
-		this.creator_user_id_ = creator_user_id_;
-		this.update_date_ = update_date_;
-		this.updator_user_id_ = updator_user_id_;
-	}
-
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 9024324742054605356L;
+
+	public Integer getCardIdentifier() {
+		return cardIdentifier;
+	}
+
 	/**
-	* 
-	*/
+	 * card_identifier
+	 */
 
 	@Id
-	private Integer card_identifier;
+	private Integer cardIdentifier;
 
-	@javax.persistence.Column(name = "card_type", unique = false, nullable = false, insertable = true, updatable = false, length = 255)
 	@Basic(fetch = FetchType.EAGER, optional = false)
-	private String card_type;
+	private String cardType;
 
-	@javax.persistence.Column(name = "card_number", unique = false, nullable = false, insertable = true, updatable = false, length = 255)
 	@Basic(fetch = FetchType.EAGER, optional = false)
-	private String card_number;
+	private String cardNumber;
 
-	@javax.persistence.Column(name = "cvv", unique = true, nullable = false, insertable = true, updatable = false, length = 255)
 	@Basic(fetch = FetchType.EAGER, optional = false)
 	private int cvv;
 
 	@DateTimeFormat(pattern = "dd/MM/yyyy")
 	@Temporal(value = TemporalType.DATE)
-	@javax.persistence.Column(name = "exp_date", unique = false, nullable = false, insertable = true, updatable = false, length = 255)
 	@Basic(fetch = FetchType.EAGER, optional = false)
-	private Date exp_date;
+	private Date expDate;
 
-	@javax.persistence.Column(name = "isactive", unique = false, nullable = false, insertable = true, updatable = false, length = 255)
 	@Basic(fetch = FetchType.EAGER, optional = false)
-	private boolean isactive;
+	private boolean isActive;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JsonBackReference
 	private Account account;
+
+	@DateTimeFormat(pattern = "dd/MM/yyyy")
+	@Temporal(value = TemporalType.DATE)
+	@Basic(fetch = FetchType.EAGER, optional = false)
+
+	private java.util.Date creationDate = null;
+
+	@Basic(fetch = FetchType.EAGER, optional = false)
+
+	private String creatorId = null;
+
+	@DateTimeFormat(pattern = "dd/MM/yyyy")
+	@Temporal(value = TemporalType.DATE)
+	@Basic(fetch = FetchType.EAGER, optional = false)
+
+	private java.util.Date updateDate = null;
+
+	@Basic(fetch = FetchType.EAGER, optional = false)
+
+	private String updatorId = null;
 
 	// TECHNICAL
 	public CreditCard() {
 		super();
 	}
 
-	@DateTimeFormat(pattern = "dd/MM/yyyy")
-	@Temporal(value = TemporalType.DATE)
-	@javax.persistence.Column(name = "creation_date_", unique = false, nullable = false, insertable = true, updatable = false)
-	@Basic(fetch = FetchType.EAGER, optional = false)
-
-	private java.util.Date creation_date_ = null;
-
-	public java.util.Date getCreationDate() {
-		return creation_date_;
+	public CreditCard(Integer cardIdentifier, String cardType, String cardNumber, int cvv, Date expDate,
+			boolean isActive, Account account, Date creationDate, String creatorId, Date updateDate, String updatorId) {
+		super();
+		this.cardIdentifier = cardIdentifier;
+		this.cardType = cardType;
+		this.cardNumber = cardNumber;
+		this.cvv = cvv;
+		this.expDate = expDate;
+		this.isActive = isActive;
+		this.account = account;
+		this.creationDate = creationDate;
+		this.creatorId = creatorId;
+		this.updateDate = updateDate;
+		this.updatorId = updatorId;
 	}
 
-	public void setCreationDate(java.util.Date creationDate) {
-		this.creation_date_ = creationDate;
+	@Override
+	public String toString() {
+		return ";" + cardIdentifier + "," + cardType + "," + cardNumber + "," + cvv + "," + expDate + "," + isActive
+				+ "," + account.getAccIdentifier() + "," + creationDate + "," + creatorId + "," + updateDate + ","
+				+ updatorId;
 	}
 
-	public String getCreatorUserId() {
-		return creator_user_id_;
-	}
-
-	public void setCreatorUserId(String creatorUserId) {
-		this.creator_user_id_ = creatorUserId;
-	}
-
-	public java.util.Date getUpdateDate() {
-		return update_date_;
-	}
-
-	public void setUpdateDate(java.util.Date updateDate) {
-		this.update_date_ = updateDate;
-	}
-
-	public String getUpdatorUserId() {
-		return updator_user_id_;
-	}
-
-	public void setUpdatorUserId(String updatorUserId) {
-		this.updator_user_id_ = updatorUserId;
-	}
-
-	@javax.persistence.Column(name = "creator_user_id_", unique = false, nullable = false, insertable = true, updatable = false, length = 255)
-	@Basic(fetch = FetchType.EAGER, optional = false)
-
-	private String creator_user_id_ = null;
-
-	@DateTimeFormat(pattern = "dd/MM/yyyy")
-	@Temporal(value = TemporalType.DATE)
-	@javax.persistence.Column(name = "update_date_", unique = false, nullable = false, insertable = true, updatable = true)
-	@Basic(fetch = FetchType.EAGER, optional = false)
-
-	private java.util.Date update_date_ = null;
-
-	@javax.persistence.Column(name = "updator_user_id_", unique = false, nullable = false, insertable = true, updatable = true, length = 255)
-	@Basic(fetch = FetchType.EAGER, optional = false)
-
-	private String updator_user_id_ = null;
+//	public String convertToString() {
+//		return cardIdentifier + "," + cardType + "," + cardNumber + "," + cvv + "," + expDate + "," + isActive + ","
+//				+ account + "," + creationDate + "," + creatorId + "," + updateDate + "," + updatorId;
+//	}
 
 	public String getCardType() {
-		return card_type;
+		return cardType;
 	}
 
 	public void setCardType(String cardType) {
-		this.card_type = cardType;
+		this.cardType = cardType;
 	}
 
 	public String getCardNumber() {
-		return card_number;
+		return cardNumber;
 	}
 
 	public void setCardNumber(String cardNumber) {
-		this.card_number = cardNumber;
+		this.cardNumber = cardNumber;
 	}
 
 	public int getCvv() {
@@ -163,19 +139,19 @@ public class CreditCard implements Serializable {
 	}
 
 	public Date getExpDate() {
-		return exp_date;
+		return expDate;
 	}
 
 	public void setExpDate(Date expDate) {
-		this.exp_date = expDate;
+		this.expDate = expDate;
 	}
 
 	public boolean isActive() {
-		return isactive;
+		return isActive;
 	}
 
 	public void setActive(boolean isActive) {
-		this.isactive = isActive;
+		this.isActive = isActive;
 	}
 
 	public Account getAccount() {
@@ -186,27 +162,54 @@ public class CreditCard implements Serializable {
 		this.account = account;
 	}
 
-	@Override
-	public String toString() {
-		return ";" + card_identifier + "," + card_type + "," + card_number + "," + cvv + "," + exp_date + "," + isactive
-				+ "," + account.getAcc_identifier() + "," + creation_date_ + "," + creator_user_id_ + "," + update_date_
-				+ "," + updator_user_id_;
+	public java.util.Date getCreationDate() {
+		return creationDate;
 	}
 
-	public String convertToString() {
-		return card_identifier + "," + card_type + "," + card_number + "," + cvv + "," + exp_date + "," + isactive + ","
-				+ account + "," + creation_date_ + "," + creator_user_id_ + "," + update_date_ + "," + updator_user_id_;
+	public void setCreationDate(java.util.Date creationDate) {
+		this.creationDate = creationDate;
+	}
+
+	public String getCreatorId() {
+		return creatorId;
+	}
+
+	public void setCreatorId(String creatorId) {
+		this.creatorId = creatorId;
+	}
+
+	public java.util.Date getUpdateDate() {
+		return updateDate;
+	}
+
+	public void setUpdateDate(java.util.Date updateDate) {
+		this.updateDate = updateDate;
+	}
+
+	public String getUpdatorId() {
+		return updatorId;
+	}
+
+	public void setUpdatorId(String updatorId) {
+		this.updatorId = updatorId;
 	}
 
 	// CALL BACKS
-
 	@PrePersist
 	public void prePersist() {
 		java.sql.Timestamp time = new java.sql.Timestamp(System.currentTimeMillis());
 		String user = MyUserDetailsService.getCurrentUser();
+		this.setCreatorId(user);
 		this.setCreationDate(time);
-		this.setCreatorUserId(user);
-		this.setUpdatorUserId(user);
+		this.setUpdatorId(user);
+		this.setUpdateDate(time);
+	}
+
+	@PreUpdate
+	public void preUpdate() {
+		java.sql.Timestamp time = new java.sql.Timestamp(System.currentTimeMillis());
+		String user = MyUserDetailsService.getCurrentUser();
+		this.setUpdatorId(user);
 		this.setUpdateDate(time);
 	}
 }
